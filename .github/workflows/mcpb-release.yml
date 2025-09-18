@@ -38,6 +38,7 @@ jobs:
         mkdir -p bundle
         cp index.js bundle/
         cp package.json bundle/
+        cp manifest.json bundle/
         
         # Install production dependencies
         cd bundle
@@ -46,3 +47,34 @@ jobs:
         # Create MCPB package
         npx @anthropic-ai/mcpb pack
         
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          bundle/*.mcpb
+        tag_name: ${{ github.ref_name }}
+        name: MCPB Release ${{ github.ref_name }}
+        body: |
+          ## 📱 MCPB Package Release ${{ steps.version.outputs.version }}
+          
+          ### Installation
+          1. Download the `.mcpb` file below
+          2. Double-click to install in Claude Desktop
+          3. Configure your user name in the installation dialog
+          
+          ### Features
+          - Single-click installation
+          - User-friendly configuration interface
+          - Echo tool with customizable user name
+          - No command line setup required
+          
+          ### Usage
+          After installation, the echo tool will be available in Claude Desktop with your configured user name.
+          
+          ### Configuration
+          During installation, you can set:
+          - **User Name**: The name to use in echo responses (defaults to "user")
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
