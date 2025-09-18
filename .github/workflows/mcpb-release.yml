@@ -1,8 +1,8 @@
 name: MCPB Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags: [ 'v*' ]
   workflow_dispatch:
 
 jobs:
@@ -43,78 +43,6 @@ jobs:
         cd bundle
         npm install --production
         
-        # Create manifest.json with dynamic version
-        echo "{
-          \"dxt_version\": \"0.1\",
-          \"name\": \"mcp-echo-server-mcpb\",
-          \"version\": \"${{ steps.version.outputs.version }}\",
-          \"description\": \"An MCP server that echo user words with customizable user name\",
-          \"author\": {
-            \"name\": \"koladev\",
-            \"email\": \"kolawole@ritza.co\"
-          },
-          \"server\": {
-            \"type\": \"node\",
-            \"entry_point\": \"index.js\",
-            \"mcp_config\": {
-              \"command\": \"node\",
-              \"args\": [
-                \"\${__dirname}/index.js\"
-              ],
-              \"env\": {
-                \"USER_NAME\": \"\${user_config.user_name}\"
-              }
-            }
-          },
-          \"tools\": [
-            {
-              \"name\": \"echo\",
-              \"description\": \"Echo back the input text with customizable user name\"
-            }
-          ],
-          \"user_config\": {
-            \"user_name\": {
-              \"type\": \"string\",
-              \"title\": \"User Name\",
-              \"description\": \"The name to use in echo responses\",
-              \"default\": \"user\",
-              \"required\": false
-            }
-          },
-          \"license\": \"MIT\"
-        }" > manifest.json
-        
         # Create MCPB package
         npx @anthropic-ai/mcpb pack
         
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          bundle/*.mcpb
-        tag_name: ${{ github.ref_name }}
-        name: MCPB Release ${{ github.ref_name }}
-        body: |
-          ## 📱 MCPB Package Release ${{ steps.version.outputs.version }}
-          
-          ### Installation
-          1. Download the `.mcpb` file below
-          2. Double-click to install in Claude Desktop
-          3. Configure your user name in the installation dialog
-          
-          ### Features
-          - Single-click installation
-          - User-friendly configuration interface
-          - Echo tool with customizable user name
-          - No command line setup required
-          
-          ### Usage
-          After installation, the echo tool will be available in Claude Desktop with your configured user name.
-          
-          ### Configuration
-          During installation, you can set:
-          - **User Name**: The name to use in echo responses (defaults to "user")
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
