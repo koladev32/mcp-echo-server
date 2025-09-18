@@ -1,8 +1,8 @@
 name: MCPB Release
 
 on:
-  push:
-    tags: [ 'v*' ]
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
     - name: Run tests
       run: npm test
       
-    - name: Extract version from tag
+    - name: Extract version from release
       id: version
       run: |
         VERSION=${GITHUB_REF#refs/tags/v}
