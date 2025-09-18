@@ -8,6 +8,9 @@ on:
 jobs:
   mcpb-release:
     runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout code
@@ -77,4 +80,4 @@ jobs:
         draft: false
         prerelease: false
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
